@@ -3,7 +3,11 @@ import cors from 'cors';
 import { Request, Response } from 'express';
 
 const app = express();
-app.use(cors());
+
+app.use(cors({
+  origin: 'http://localhost:8081'
+}));
+
 app.use(express.json());
 
 const port = 3000;
