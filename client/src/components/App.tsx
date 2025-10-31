@@ -1,3 +1,4 @@
+import { response } from 'express';
 import React, { useEffect, useState } from 'react';
 //import { Task } from './types'; // Убедись, что путь верный
 
@@ -10,6 +11,9 @@ interface Task {
 
 const App: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [newTaskTitle, setNewTaskTitle] = useState('');
+
+
 
   useEffect(() => {
     fetch('http://localhost:3000/api/tasks')
@@ -37,9 +41,31 @@ const App: React.FC = () => {
     });
   }
 
+  const addTask = () => {
+    if (!newTaskTitle.trim()) return;
+    fetch(`http://localhost:3000/api/tasks/`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({title: newTaskTitle, completed: false })
+    })
+    .then((response) => response.json())
+    .then((newTask) => setTasks([...tasks,newTask]))
+    .then((error) => console.error('Error adding task:', error))
+    setNewTaskTitle('')
+  };
+
+
   return (
     <div className="container">
       <h1>TODO APP</h1>
+       <div>
+        <input type="text"
+         value={newTaskTitle}
+         onChange={(e) => setNewTaskTitle(e.target.value)}
+         placeholder='New task title'/>
+         <button onClick={addTask}>Add Task</button>
+       </div>
+       
       <ul>
         {tasks.map((task) => (
           <li key={task.id}>
